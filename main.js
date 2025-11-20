@@ -41,12 +41,6 @@ async function loginWithAccount() {
         await page.waitForTimeout(3000);
         console.log("输入手机号");
         await page.fill('input[type="tel"][input-type="all"]', "18177053882");
-        await page.waitForTimeout(1000);
-        console.log("勾选协议");
-        await page.click('button[role="checkbox"]');
-        await page.waitForTimeout(1000);
-        console.log("提交...");
-        await page.click('button[disabled="disabled"]');
         result = await page.content();
         console.log(result);
     } catch (e) {} finally {
