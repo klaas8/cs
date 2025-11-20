@@ -34,17 +34,15 @@ async function loginWithAccount() {
     let result = "";
     try {
         page = await browser.newPage();
-        page.setDefaultTimeout(5000); // 设置默认超时5秒
-
-        // 导航到页面
-        await page.goto("https://wappass.baidu.com/passport/login?u=https://fanyi.baidu.com/m/profile#/sms_login_new", {
-            waitUntil: "networkidle"
-        });
-        await page.waitForTimeout(3000);
+        page.setDefaultTimeout(30000);
+        await page.goto("https://wappass.baidu.com/passport/login?u=https://fanyi.baidu.com/m/profile#/sms_login_new", { waitUntil: "networkidle" });
+        await page.waitForTimeout(5000);
         console.log("输入手机号");
         await page.fill('input[type="tel"][input-type="all"]', "18177053882");
+        await page.waitForTimeout(1000);
         console.log("勾选协议");
         await page.click('button[role="checkbox"]');
+        await page.waitForTimeout(1000);
         console.log("提交...");
         await page.click('button[disabled="disabled"]');
     } catch (e) {
