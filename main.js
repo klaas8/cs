@@ -104,7 +104,7 @@ async function s1() {
 
 async function main() {
     const result = await s1();
-    await sendTelegram(result.length);
+    await sendTelegram(result);
 }
 
 main().catch(console.error);
