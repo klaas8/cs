@@ -15,7 +15,7 @@ async function sendTelegram(message) {
     try {
         await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
             chat_id: chatId,
-            text: fullMessage
+            text: fullMessage,
             parse_mode: 'HTML'
         }, {
             timeout: 10000
