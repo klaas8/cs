@@ -25,86 +25,6 @@ async function sendTelegram(message) {
     }
 }
 
-async function checkAndClickAgreement(page) {
-    const buttonSelector = 'button[role="checkbox"][aria-label="请勾选协议"]';
-    let result = {
-        success: false,
-        message: "",
-        clickedCount: 0,
-        finalStatus: ""
-    };
-
-    try {
-        console.log("查找协议按钮...");
-        
-        // 等待按钮出现，设置5秒超时
-        await page.waitForSelector(buttonSelector, { 
-            timeout: 5000,
-            state: 'visible'
-        });
-        
-        console.log("找到协议按钮，开始检查状态...");
-        
-        let maxAttempts = 5; // 最大尝试次数，避免无限循环
-        let attempts = 0;
-        
-        while (attempts < maxAttempts) {
-            attempts++;
-            console.log(`第 ${attempts} 次检查...`);
-            
-            // 获取当前 aria-checked 状态
-            const isChecked = await page.$eval(buttonSelector, button => 
-                button.getAttribute('aria-checked') === 'true'
-            );
-            
-            if (isChecked) {
-                console.log("协议已勾选，无需点击");
-                result.success = true;
-                result.message = "协议已勾选";
-                result.finalStatus = "checked";
-                break;
-            } else {
-                console.log("协议未勾选，执行点击...");
-                
-                // 点击按钮
-                await page.click(buttonSelector);
-                result.clickedCount++;
-                
-                // 等待点击后的响应
-                await page.waitForTimeout(1000);
-                
-                // 再次检查状态
-                const newIsChecked = await page.$eval(buttonSelector, button => 
-                    button.getAttribute('aria-checked') === 'true'
-                );
-                
-                if (newIsChecked) {
-                    console.log("点击成功，协议已勾选");
-                    result.success = true;
-                    result.message = "点击成功，协议已勾选";
-                    result.finalStatus = "checked_after_click";
-                    break;
-                } else {
-                    console.log("点击后协议仍未勾选，准备重试...");
-                    
-                    if (attempts >= maxAttempts) {
-                        result.message = `点击 ${maxAttempts} 次后协议仍未勾选`;
-                        result.finalStatus = "failed_after_attempts";
-                    }
-                }
-            }
-        }
-        
-    } catch (error) {
-        console.error("操作协议按钮时发生错误:", error);
-        result.message = `错误: ${error.message}`;
-        result.finalStatus = "error";
-    }
-    
-    return result;
-}
-
-
 async function loginWithAccount() {
     const browser = await chromium.launch({
         headless: true,
@@ -134,8 +54,14 @@ async function loginWithAccount() {
         console.log("当前值:", inputValue);
         
         console.log("点击");
-        const agreementResult = await checkAndClickAgreement(page);
-        console.log(`${agreementResult.success}${agreementResult.message}`);
+        const buttonSelector = 'button[role="checkbox"]';
+        const isInputExists = await page.waitForSelector(buttonSelector, { 
+            timeout: 5000,
+            state: 'visible'
+        }).then(() => true).catch(() => false);
+        if (!isInputExists) {
+            console.log("未找到协议");
+        }        
         
         result = await page.content();
         console.log(result);
