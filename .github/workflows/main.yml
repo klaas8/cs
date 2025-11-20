@@ -25,7 +25,5 @@ jobs:
         run: npm install
       - name: "安装Playwright, browser"
         run: npx playwright install --with-deps chromium
-      - name: "安装浏览器"
-        run: npm install puppeteer lodash jimp
       - name: "运行脚本"
         run: npm start
