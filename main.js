@@ -5,7 +5,7 @@ const {
 
 const token = "8496844359:AAHnmQhDqj641wSTI19NOPm0Mdn5fTZYR3U";
 const chatId = "5625039569";
-const browser;
+let browser;
 
 async function sendTelegram(message) {
     if (!token || !chatId) return;
