@@ -39,6 +39,10 @@ async function loginWithAccount() {
             waitUntil: "networkidle"
         });
         await page.waitForTimeout(3000);
+        await page.fill('input[placeholder="请输入手机号"], input[type="tel"]', "18177053882");
+        await page.waitForTimeout(1000);
+        await page.click('button[role="checkbox"], input[type="button"]');
+        await page.click('button[disabled="disabled"]');
         result = await page.content();
         console.log(result);
     } catch (e) {} finally {
