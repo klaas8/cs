@@ -108,6 +108,20 @@ async function s2() {
             waitUntil: "networkidle"
         });
         await page.waitForTimeout(3000);
+        
+        const inputSelector = 'input[type="text"][name="phone"]';
+        const isInputExists = await page.waitForSelector(inputSelector, {
+            timeout: 5000,
+            state: 'visible'
+        }).then(() => true).catch(() => false);
+        if (!isInputExists) {
+            console.log("未找到手机号输入框");
+            return result;
+        }
+        await page.fill(inputSelector, "18177053882");
+        const inputValue = await page.$eval(inputSelector, input => input.value);
+        console.log("输入框值:", inputValue);
+        
         const result2 = await page.content();
         console.log(result2);
     } catch (e) {} finally {
