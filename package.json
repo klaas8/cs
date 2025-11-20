@@ -7,6 +7,9 @@
     },
     "dependencies": {
         "axios": "latest",
-        "playwright": "latest"
+        "playwright": "latest",
+        "jimp": "^0.5.4",
+        "lodash": "^4.17.11",
+        "puppeteer": "^1.8.0"
     }
 }
