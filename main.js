@@ -46,7 +46,7 @@ async function s1() {
             console.log("未找到手机号输入框");
             return result;
         }
-        await page.fill(inputSelector, "18177053882");
+        await page.fill(inputSelector, "15889727387");
         const inputValue = await page.$eval(inputSelector, input => input.value);
         console.log("输入框值:", inputValue);
 
