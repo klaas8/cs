@@ -13,7 +13,7 @@ async function sendTelegram(message) {
     const now = new Date();
     const hkTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
     const timeStr = hkTime.toISOString().replace("T", " ").substr(0, 19) + " HKT";
-    const fullMessage = `🎉 Netlib 运行通知\n\n运行时间：${timeStr}\n\n${message}`;
+    const fullMessage = `🎉 测压运行通知\n\n运行时间：${timeStr}\n\n${message}`;
     try {
         await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
             chat_id: chatId,
