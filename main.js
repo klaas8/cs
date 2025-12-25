@@ -3,29 +3,8 @@ const {
     chromium
 } = require("playwright");
 
-const token = "8496844359:AAHnmQhDqj641wSTI19NOPm0Mdn5fTZYR3U";
-const chatId = "5625039569";
 let browser;
 const phone = "15889727387";
-
-async function sendTelegram(message) {
-    if (!token || !chatId) return;
-    const now = new Date();
-    const hkTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
-    const timeStr = hkTime.toISOString().replace("T", " ").substr(0, 19) + " HKT";
-    const fullMessage = `🎉 测压运行通知\n\n运行时间：${timeStr}\n\n${phone}\n${message}`;
-    try {
-        await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
-            chat_id: chatId,
-            text: fullMessage
-        }, {
-            timeout: 10000
-        });
-        console.log("✅ Telegram 通知发送成功");
-    } catch (e) {
-        console.log("⚠️ Telegram 发送失败");
-    }
-}
 
 // 百度翻译
 async function s1() {
@@ -139,7 +118,6 @@ async function main() {
     });
     const result = await s1();
     //const result2 = await s2();
-    // await sendTelegram(`${result}`);
     await browser.close();
 }
 
