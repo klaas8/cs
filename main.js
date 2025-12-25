@@ -9,6 +9,7 @@ const phone = "15889727387";
 // 百度翻译
 async function s1() {
     let page;
+    let result = "百度翻译: fail";
     try {
         page = await browser.newPage();
         page.setDefaultTimeout(30000);
@@ -23,7 +24,7 @@ async function s1() {
         }).then(() => true).catch(() => false);
         if (!isInputExists) {
             console.log("未找到手机号输入框");
-            return;
+            return result;
         }
         await page.fill(inputSelector, phone);
         const inputValue = await page.$eval(inputSelector, input => input.value);
@@ -36,7 +37,7 @@ async function s1() {
         }).then(() => true).catch(() => false);
         if (!isButtonExists) {
             console.log("未找到协议");
-            return;
+            return result;
         }
         await page.click(buttonSelector);
         await page.waitForTimeout(1000);
@@ -45,7 +46,7 @@ async function s1() {
             console.log("协议按钮已成功选中");
         } else {
             console.log("协议按钮未选中");
-            return;
+            return result;
         }
 
         const smsLoginSelectors = [
@@ -63,7 +64,7 @@ async function s1() {
                     await page.click(selector);
                     await page.waitForTimeout(2000);
                     console.log("成功点击验证码登录按钮");
-                    console.log("百度翻译: success");
+                    result = "百度翻译: success";
                     break;
                 }
             } catch (e) {
@@ -73,6 +74,7 @@ async function s1() {
     } catch (e) {} finally {
         if (page) await page.close();
     }
+    return result;
 }
 
 async function main() {
@@ -80,7 +82,7 @@ async function main() {
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"]
     });
-    await s1();
+    const result = await s1();
     await browser.close();
 }
 
