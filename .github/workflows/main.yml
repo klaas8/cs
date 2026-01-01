@@ -18,22 +18,67 @@ jobs:
     steps:
       - name: "获取仓库代码"
         uses: actions/checkout@v4
+      
       - name: "设置Node.js环境"
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+      
       - name: "安装依赖项"
         run: npm install
-      - name: "检查Playwright, browser"
-        id: cache-playwright
-        uses: actions/cache@v4
-        with:
-          path: ./cache/playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('./cache/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-      - name: "安装Playwright, browser"
-        run: npx playwright install --with-deps chromium
-        if: ${{ steps.cache-playwright.outputs.cache-hit != 'true' }}
+      
+      - name: "检查缓存目录"
+        id: check-cache
+        run: |
+          if [ -d "./cache/playwright" ] && [ -n "$(ls -A ./cache/playwright 2>/dev/null)" ]; then
+            echo "cache_exists=true" >> $GITHUB_OUTPUT
+            echo "缓存存在"
+          else
+            echo "cache_exists=false" >> $GITHUB_OUTPUT
+            echo "缓存不存在"
+          fi
+      
+      - name: "设置 Playwright 缓存路径（如果缓存存在）"
+        if: steps.check-cache.outputs.cache_exists == 'true'
+        run: |
+          export PLAYWRIGHT_BROWSERS_PATH="./cache/playwright"
+          echo "PLAYWRIGHT_BROWSERS_PATH=./cache/playwright" >> $GITHUB_ENV
+          echo "已设置缓存路径: ./cache/playwright"
+      
+      - name: "安装Playwright浏览器"
+        if: steps.check-cache.outputs.cache_exists == 'false'
+        run: |
+          # 创建缓存目录
+          mkdir -p ./cache/playwright
+          
+          # 设置环境变量，让 Playwright 安装到指定目录
+          export PLAYWRIGHT_BROWSERS_PATH="./cache/playwright"
+          
+          # 安装浏览器
+          npx playwright install --with-deps chromium
+          
+          # 检查是否安装成功
+          if [ -d "./cache/playwright" ]; then
+            echo "浏览器已安装到缓存目录"
+            ls -la ./cache/playwright/
+          else
+            echo "安装失败"
+            exit 1
+          fi
+      
+      - name: "提交缓存到仓库"
+        if: steps.check-cache.outputs.cache_exists == 'false' && always()
+        run: |
+          # 配置 git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 添加缓存目录
+          git add ./cache/playwright
+          
+          # 尝试提交
+          git commit -m "chore: 添加Playwright浏览器缓存 [skip ci]" || echo "没有需要提交的更改"
+          git push origin main || echo "推送失败或无需推送"
+      
       - name: "运行脚本"
         run: npm start
