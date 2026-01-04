@@ -77,12 +77,65 @@ async function s1() {
     return result;
 }
 
+async function s2() {
+    let page;
+    let result = "闪臣HTTP: fail";
+    try {
+        page = await browser.newPage();
+        page.setDefaultTimeout(30000);
+        await page.goto("https://h.shanchendaili.com/", {
+            waitUntil: "networkidle"
+        });
+        await page.waitForTimeout(3000);
+        const inputSelector = 'input[type="tel"]:not([class])';
+        const isInputExists = await page.waitForSelector(inputSelector, {
+            timeout: 5000,
+            state: 'visible'
+        }).then(() => true).catch(() => false);
+        if (!isInputExists) {
+            console.log("未找到手机号输入框");
+            return result;
+        }
+        await page.fill(inputSelector, phone);
+        const inputValue = await page.$eval(inputSelector, input => input.value);
+        console.log("输入框值:", inputValue);
+
+        const smsLoginSelectors = [
+            '#obtain_code',
+            'a:has-text("获取验证码")'
+        ];
+
+        for (const selector of smsLoginSelectors) {
+            try {
+                const isSmsButtonExists = await page.waitForSelector(selector, {
+                    timeout: 2000,
+                    state: 'visible'
+                }).then(() => true).catch(() => false);
+                if (isSmsButtonExists) {
+                    await page.click(selector);
+                    await page.waitForTimeout(2000);
+                    console.log("成功点击验证码登录按钮");
+                    result = "闪臣HTTP: success";
+                    break;
+                }
+            } catch (e) {
+                continue;
+            }
+        }
+    } catch (e) {} finally {
+        if (page) await page.close();
+    }
+    return result;
+}
+
 async function main() {
     browser = await chromium.launch({
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"]
     });
-    const result = await s1();
+    // const result = await s1();
+    const result = await s2();
+    console.log(result)
     await browser.close();
 }
 
