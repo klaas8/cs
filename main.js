@@ -4,7 +4,7 @@ const {
 } = require("playwright");
 
 let browser;
-const phone = "18177053882";
+const phone = "15889727387";
 
 // 百度翻译
 async function s1() {
