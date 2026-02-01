@@ -2,11 +2,8 @@ name: "自动任务"
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "*/1 * * * *"
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   auto_login_netlib:
@@ -26,12 +23,3 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: "运行脚本"
         run: npm start
-      - name: Auto green
-        run: |
-          sleep 180
-          git config --local user.email "bot@github.com"
-          git config --local user.name "bot"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.PAT }}@github.com/${{ github.repository }}
-          git pull --rebase
-          git commit --allow-empty -m "Auto green"
-          git push
