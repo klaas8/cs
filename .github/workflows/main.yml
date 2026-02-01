@@ -2,15 +2,11 @@ name: "自动任务"
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "0 0 * * *"
   workflow_dispatch:
   push:
     branches:
       - main
-    paths:
-      - ".github/workflows/main.yml"
-      - "package.json"
-      - "**.js"
 
 jobs:
   auto_login_netlib:
@@ -18,6 +14,8 @@ jobs:
     steps:
       - name: "获取仓库代码"
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}
       - name: "设置Node.js环境"
         uses: actions/setup-node@v4
         with:
@@ -28,3 +26,12 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: "运行脚本"
         run: npm start
+      - name: Auto green
+        run: |
+          sleep 180
+          git config --local user.email "bot@github.com"
+          git config --local user.name "bot"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.PAT }}@github.com/${{ github.repository }}
+          git pull --rebase
+          git commit --allow-empty -m "Auto green"
+          git push
