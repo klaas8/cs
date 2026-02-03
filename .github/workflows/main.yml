@@ -25,6 +25,6 @@ jobs:
       - name: "安装Playwright, browser"
         run: npx playwright install --with-deps chromium
 
-      - name: "运行脚本（带超时控制）"
+      - name: "运行脚本"
         run: |
-          timeout 5 npm start || true
+          timeout 60 npm start || true
