@@ -25,18 +25,6 @@ jobs:
       - name: "安装Playwright, browser"
         run: npx playwright install --with-deps chromium
 
-      - name: "运行脚本（带定时器）"
+      - name: "运行脚本（带超时控制）"
         run: |
-          # 在后台启动定时器
-          (sleep 300 && echo "定时器触发，脚本将退出") &
-          TIMER_PID=$!
-          
-          # 捕获退出信号
-          trap "kill $TIMER_PID 2>/dev/null; exit 0" SIGTERM SIGINT
-          
-          # 运行主脚本
-          npm run main
-          
-          # 脚本完成后清理定时器
-          kill $TIMER_PID 2>/dev/null
-          exit 0
+          timeout 5 npm run main || true
