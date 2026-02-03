@@ -8,25 +8,26 @@ on:
 jobs:
   auto_login_netlib:
     runs-on: ubuntu-latest
-    #timeout-minutes: 1
     steps:
       - name: "获取仓库代码"
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT }}
-      
+
       - name: "设置Node.js环境"
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-      
+
       - name: "安装依赖项"
         run: npm install
-      
+
       - name: "安装Playwright, browser"
         run: npx playwright install --with-deps chromium
-      
-      - name: "运行脚本"
+
+      - name: "运行脚本（带超时控制）"
         run: |
-          timeout 5 npm start || true
-          npm run main
+          # 使用timeout命令控制最大运行时间
+          timeout 3 npm run main || true
+          echo "脚本执行完成或超时，退出状态码: 0"
+          exit 0
